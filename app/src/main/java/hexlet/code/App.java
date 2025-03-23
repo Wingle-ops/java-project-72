@@ -23,7 +23,11 @@ public class App {
     }
 
     public static void main(String[] args) {
+        String portEnv = System.getenv("PORT");
+        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 7000;
+
         Javalin app = getApp();
-        app.start(7070);
+        app.start(port);
+        log.info("servet start on port: " + port);
     }
 }

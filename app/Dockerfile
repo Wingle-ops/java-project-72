@@ -2,8 +2,18 @@ FROM gradle:8.7.0-jdk21
 
 WORKDIR /app
 
-COPY /app .
+# Копируем только необходимые файлы для сборки
+COPY build.gradle settings.gradle ./
+COPY src ./src
 
+# Устанавливаем зависимости
+RUN gradle build --no-daemon
+
+# Копируем оставшиеся файлы (если нужно)
+COPY . .
+
+# Выполняем сборку
 RUN gradle installDist
 
-CMD ./build/install/app/bin/App
+# Запускаем приложение
+CMD ["./build/install/app/bin/App"]

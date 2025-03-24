@@ -1,4 +1,4 @@
-package hexlet.code;
+package hexlet.code.utils;
 
 import com.zaxxer.hikari.HikariConfig;
 

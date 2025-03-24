@@ -5,6 +5,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.javalin.rendering.template.JavalinJte;
+
+import hexlet.code.utils.Baserepo;
+import hexlet.code.utils.patternSettings;
 
 public class App {
 
@@ -13,8 +17,11 @@ public class App {
 
     public static Javalin getApp() {
 
-        Javalin app = Javalin.create(config -> { // указываем настройки конфига для приложения (Логирование)
+        Javalin app = Javalin.create(config -> {
+            // Указываем настройки конфига для приложения (Логирование)
             config.bundledPlugins.enableDevLogging();
+            // Добавляем использоване Jte шаблонизатора
+            config.fileRenderer(new JavalinJte(patternSettings.createTemplateEngine()));
         });
 
         // Создаем пул соединений. Далее мы указываем, что будем использовать тип БД
@@ -27,7 +34,7 @@ public class App {
         Baserepo.datasource = datasource;
 
         app.get("/", ctx -> { // Тут при переходе на главную страницу будет выовзиться надпись
-           ctx.result("Hello World");
+//           ctx.render("startPage");
            log.info("Start!"); // Тут будет выводиться лог с информацией
         });
 

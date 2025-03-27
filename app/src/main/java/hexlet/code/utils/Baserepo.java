@@ -1,9 +1,9 @@
 package hexlet.code.utils;
 
-import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 public class Baserepo {
 
-    public static HikariConfig datasource;
+    public static HikariDataSource datasource;
 
 }

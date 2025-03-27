@@ -2,10 +2,15 @@ package hexlet.code;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import hexlet.code.utils.Urls.UrlController;
+import hexlet.code.utils.operationToUrl.NamedRouters;
+import hexlet.code.utils.repository.UrlRepository;
 import io.javalin.Javalin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import io.javalin.rendering.template.JavalinJte;
+import static io.javalin.rendering.template.TemplateUtil.model;
 
 import hexlet.code.utils.Baserepo;
 import hexlet.code.utils.patternSettings;
@@ -33,10 +38,9 @@ public class App {
         HikariDataSource datasource = new HikariDataSource(hConfig);
         Baserepo.datasource = datasource;
 
-        app.get("/", ctx -> { // Тут при переходе на главную страницу будет выовзиться надпись
-//           ctx.render("startPage");
-           log.info("Start!"); // Тут будет выводиться лог с информацией
-        });
+        app.get(NamedRouters.index(), UrlController::index);
+        app.get(NamedRouters.urls(), UrlController::urls);
+        app.post(NamedRouters.urlsId(), UrlController::urlsId);
 
         return app;
     }

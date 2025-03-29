@@ -4,13 +4,11 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import hexlet.code.utils.Urls.UrlController;
 import hexlet.code.utils.operationToUrl.NamedRouters;
-import hexlet.code.utils.repository.UrlRepository;
 import io.javalin.Javalin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.javalin.rendering.template.JavalinJte;
-import static io.javalin.rendering.template.TemplateUtil.model;
 
 import hexlet.code.utils.Baserepo;
 import hexlet.code.utils.patternSettings;

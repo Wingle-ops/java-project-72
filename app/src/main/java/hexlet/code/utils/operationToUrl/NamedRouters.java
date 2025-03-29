@@ -7,7 +7,7 @@ public class NamedRouters {
     }
 
     public static String urls() {
-        return "/urls";
+        return "models/urls";
     }
 
     public static String urlsId() {

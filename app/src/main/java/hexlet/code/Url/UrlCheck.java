@@ -10,17 +10,15 @@ import lombok.Setter;
 public class UrlCheck {
 
     private Long id;
-    private String name;
     private int codeAnswer;
     private String title;
     private String h1;
     private String description;
     private LocalDateTime dateCheck;
 
-    public UrlCheck(Long id, String name, LocalDateTime dataCheck, int codeAnswer, String title, String h1, String description) {
+    public UrlCheck(Long id, int codeAnswer, String title, String h1, String description, LocalDateTime dateCheck) {
         this.id = id;
-        this.name = name;
-        this.dateCheck = dataCheck;
+        this.dateCheck = dateCheck;
         this.codeAnswer = codeAnswer;
         this.title = title;
         this.h1 = h1;
@@ -29,7 +27,6 @@ public class UrlCheck {
 
     public UrlCheck(Long id, String name, LocalDateTime dataCheck, int codeAnswer) {
         this.id = id;
-        this.name = name;
         this.dateCheck = dataCheck;
         this.codeAnswer = codeAnswer;
     }

@@ -13,6 +13,10 @@ public class Url {
     private String name;
     private LocalDateTime createdAt;
 
-    public Url(Long id, String name, LocalDateTime createdAt) {}
+    public Url(Long id, String name, LocalDateTime createdAt) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+    }
     
 }

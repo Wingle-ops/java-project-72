@@ -1,28 +1,36 @@
 package hexlet.code.model;
 
+import hexlet.code.Url.BuildUrl;
 import hexlet.code.Url.Url;
 import hexlet.code.Url.UrlCheck;
 import hexlet.code.utils.Operations;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static hexlet.code.Baserepo.datasource;
 
 public class UrlRepository {
 
-    public static Optional<Flash> setUrl(String url) throws SQLException {
-        String sql = "INSERT INTO urls (name) VALUES (?)";
-        String sql1 = "SELECT * FROM urls WHERE name = ?";
+    public static Optional<Flash> setUrl(String url) throws SQLException { // Метод на добавление Url в БД
+        String sql1 = "INSERT INTO urls (name) VALUES (?)";
+//        String sql1 = "SELECT * FROM urls WHERE name = ?";
         try (Connection connection = datasource.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+//             PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
              PreparedStatement stmt1 = connection.prepareStatement(sql1, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            Optional<Url> optionalUrl = Entities.find(Operations.validateUrl(url));
+            Optional<Url> optionalUrl = Entities.findByName(Operations.validateUrl(url));
             if (optionalUrl.isEmpty()) {
-                stmt.setString(1, url);
+//                stmt.setString(1, url);
                 stmt1.setString(1, url);
-                stmt.executeUpdate();
-                stmt1.executeQuery();
+//                stmt.executeUpdate();
+                stmt1.executeUpdate();
                 ResultSet resultSet = stmt1.getGeneratedKeys();
                 if (resultSet.next()) {
                     Long id = resultSet.getLong("id");
@@ -35,80 +43,85 @@ public class UrlRepository {
             } else {
                 return Optional.of(new Flash("Страница уже существует"));
             }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при добавлении новой записи в БД " + e.getMessage());
+            throw e;
         }
         return Optional.empty();
     }
 
-    public static Optional<UrlCheck> getUrls() throws SQLException {
+    public static Optional<List<UrlCheck>> getUrls() throws SQLException { // метод на получение всех Url
+        List<UrlCheck> urlCheckCount = new ArrayList<>();
         String sql = "SELECT * FROM url_check";
         try (Connection connection = datasource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            stmt.executeQuery();
-            ResultSet resultSet = stmt.getGeneratedKeys();
+            PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String name = resultSet.getString("url");
                 LocalDateTime dateCheck = Operations.dateTransform(resultSet.getTimestamp("dateCheck"));
                 int codeAnswer = resultSet.getInt("codeAnswer");
-                UrlCheck urls = new UrlCheck(id, name, dateCheck, codeAnswer);
-                return Optional.of(urls);
+                UrlCheck urlCheck = new UrlCheck(id, name, dateCheck, codeAnswer);
+                urlCheckCount.add(urlCheck);
             }
+            return urlCheckCount.isEmpty() ? Optional.empty() : Optional.of(urlCheckCount);
+        } catch (SQLException e) {
+            System.err.println("Ошибка при получении списка URL " + e.getMessage());
+            throw e;
         }
-        return Optional.empty();
     }
 
-    public static Optional<UrlCheck> getInfo(Long urlId) throws SQLException {
+    public static Optional<BuildUrl> getInfo(Long urlId) throws SQLException { // метод на получение данных с БД
         String sql = "SELECT * FROM url_check WHERE id = ?";
-        String sql1 = "SELECT * FROM urls WHERE id = ?";
+//        String sql1 = "SELECT * FROM urls WHERE id = ?";
         try (Connection connection = datasource.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            PreparedStatement stmt1 = connection.prepareStatement(sql1, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            PreparedStatement stmt1 = connection.prepareStatement(sql1, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setLong(1, urlId);
-            stmt1.setLong(1, urlId);
-            stmt.executeQuery();
-            stmt1.executeQuery();
-            ResultSet resultSet = stmt.getGeneratedKeys();
+//            stmt1.setLong(1, urlId);
+     //       stmt1.executeQuery();
+            ResultSet resultSet = stmt.executeQuery();;
             if (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 int codeAnswer = resultSet.getInt("codeAnswer");
                 String title = resultSet.getString("title");
                 String h1 = resultSet.getString("h1");
                 String description = resultSet.getString("description");
-                LocalDateTime dateCheck = resultSet.getDate("dateCheck");
-
-                // Дальше тут должны выбираться данные из таблицы urls, создаваться нвоый объект, а затем возвращаться
-                // 2 объекта. Далее должен происходить рендер на страничку с информацией и отображаться все данные
-                // Если данных нет, то отобрадается пустота.
-
-//                id SERIAL PRIMARY KEY,
-//                url_id BIGINT NOT NULL,
-//                codeAnswer INT,
-//                title TEXT,
-//                h1 TEXT,
-//                description TEXT,
-//                dateTest TIMESTAMP NOT NULL DEFAULT NOW(),
-//                FOREIGN KEY (url_id) REFERENCES urls(id) ON DELETE CASCADE
-
-//                private Long id;
-//                private String name;
-//                private int codeAnswer;
-//                private String title;
-//                private String h1;
-//                private String description;
-//                private LocalDateTime dateCheck;
-
+                LocalDateTime dateCheck = Operations.dateTransform(resultSet.getTimestamp("dateCheck"));
+                UrlCheck urlCheck = new UrlCheck(id, codeAnswer, title, h1, description, dateCheck);
+                Flash flash = new Flash("Страница успешно проверена");
+                return Optional.of(new BuildUrl(urlCheck, flash));
             }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при получении информации о Url " + e.getMessage());
+            throw e;
+        }
+            return Optional.empty(); // Возвращаем пустой объект, если получение данных не удалось
         }
 
+    public static Optional<BuildUrl> check(Long id) throws SQLException { // Метод на запуск проверки
+        String sql = "INSERT INTO url_check" +
+                "(codeAnswer, title, h1, description) VALUES (?, ?, ?, ?)";
+        try (Connection connection = datasource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            String address = Entities.findById(id)
+                    .orElseThrow(() -> new SQLException("Entity with id " + id + " not found"))
+                    .getName();
 
-        // При запуске проверки мы обновляем все данные и отображаем информацию по сайту. А при перехоже на информацию
-        // без запуска проверки, просто получаем информацию. То есть надо написать 2 метода. Один обновляет инфу проверки
-        // а второй получает все данные, или воспольхзоваться уже имеющимися
+            stmt.setInt(1, Operations.getAnswerCode(address));
+            stmt.setString(2, Operations.getTitle(address));
+            stmt.setString(3, Operations.getH1(address));
+            stmt.setString(4, Operations.getDescription(address));
+            stmt.executeUpdate();
+
+            ResultSet resultSet = stmt.getGeneratedKeys();
+            if (resultSet.next()) {
+                return getInfo(id);
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при проведении проверки Url " + e.getMessage());
+            throw e;
+        }
+        return Optional.empty();
     }
-
-    public static Optional<UrlCheck> getCheck(String url) throws SQLException {
-
-    }
-
-
 }

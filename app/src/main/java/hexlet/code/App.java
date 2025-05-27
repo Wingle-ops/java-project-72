@@ -32,27 +32,26 @@ public class App {
         HikariConfig hConfig = new HikariConfig();
         String dataBase = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project.sql");
         hConfig.setJdbcUrl(dataBase + ";DB_CLOSE_DELAY=-1");
-        HikariDataSource datasource = new HikariDataSource(hConfig);
-        Baserepo.datasource = datasource;
+        Baserepo.datasource = new HikariDataSource(hConfig);
 
-        app.get(NamedRouters.index(), UrlController::main);
-        app.post(NamedRouters.urls(), UrlController::setUrl);
-        app.get(NamedRouters.urls(), UrlController::urls);
-        app.get(NamedRouters.urlInfo(), UrlController::getInfo);
-        app.post(NamedRouters.urlCheck(), UrlController::getInfo); // запуск проверки сайта
+        app.get(NamedRouters.index(), UrlController::main); // Переход на главную страничку сайта
+        app.post(NamedRouters.urls(), UrlController::setUrl); // Добавление url в список сайтов
+        app.get(NamedRouters.urls(), UrlController::urls); // Переход на список сайтов
+        app.get(NamedRouters.urlInfo(), UrlController::getInfo); // Открытие странички с подробной информацией
+        app.post(NamedRouters.urlCheck(), UrlController::check); // запуск проверки сайта
 
         return app;
     }
 
     public static int getPort() { // Метод для получения порта, либо из ПО, либо стандартный
         String port = System.getenv().getOrDefault("PORT", "7070");
-        return Integer.valueOf(port);
+        return Integer.parseInt(port);
     }
 
     public static void main(String[] args) { // создаем приложение и запускаем его
         Javalin app = getApp();
         app.start(getPort());
-        log.info("servet start on port: " + getPort()); // Получаем лог о порте подключения
+        log.info("servet start on port: {}", getPort()); // Получаем лог о порте подключения
     }
 
 }

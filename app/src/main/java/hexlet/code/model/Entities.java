@@ -3,12 +3,13 @@ package hexlet.code.model;
 import hexlet.code.Url.Url;
 import hexlet.code.Url.UrlCheck;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class Entities {
 
-    protected static List<Url> entities;
+    protected static List<Url> entities = new ArrayList<>();
 
     public static void add(Url entity) {
         entities.add(entity);

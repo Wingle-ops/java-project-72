@@ -1,6 +1,6 @@
 package gg.jte.generated.ondemand.urls;
-public final class JtemainGenerated {
-	public static final String JTE_NAME = "urls/main.jte";
+public final class JteurlsGenerated {
+	public static final String JTE_NAME = "urls/urls.jte";
 	public static final int[] JTE_LINE_INFO = {0,0,0,0,0,2,2,25,25,25,25,25,25,25,25};
 	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor) {
 		gg.jte.generated.ondemand.layout.JtepageGenerated.render(jteOutput, jteHtmlInterceptor, new gg.jte.html.HtmlContent() {

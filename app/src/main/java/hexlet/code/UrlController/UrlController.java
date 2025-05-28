@@ -22,13 +22,13 @@ public class UrlController {
         if (Operations.validateUrl(url).equals("Некорректный URL")) {
             ctx.render("urls/main.jte", model("error", new Flash("Некорректный URL")));
         } else {
-            ctx.render("urls/urls.jte", // Тут мы возвращаем список значений UrlsCheck
-                    model("flash", UrlRepository.setUrl(url).get(), "urls", UrlRepository.getUrls().get()));
+                ctx.render("urls/urls.jte", // Тут мы возвращаем список значений UrlCheck
+                        model("flash", UrlRepository.setUrl(url), "urls", UrlRepository.getUrls()));
         }
     }
 
-    public static void urls(Context ctx) throws SQLException { // Тут мы возвращаем список значений UrlsCheck
-        ctx.render("urls/urls.jte", model("urls", UrlRepository.getUrls().get()));
+    public static void urls(Context ctx) throws SQLException { // Тут мы возвращаем список значений UrlCheck
+        ctx.render("urls/urls.jte", model("urls", UrlRepository.getUrls()));
     }
 
     public static void getInfo(Context ctx) throws SQLException {

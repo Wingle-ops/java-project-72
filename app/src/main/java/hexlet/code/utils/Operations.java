@@ -22,11 +22,11 @@ public class Operations {
             URI address = new URI(url);
             String protocol = address.getScheme();
             String host = address.getHost();
-            String port = String.valueOf(address.getPort());
-            if (protocol.isEmpty() || host.isEmpty() || port.isEmpty()) {
+            int port = address.getPort();
+            if (protocol == null || protocol.isEmpty() || host == null || host.isEmpty() || (port <= 0)) {
                 return "Некорректный URL";
             } else {
-                return protocol + "://" + host + ":" + port;
+                return protocol + "://" + host + (port >= 1 ? ":" + port : ""); // Если порт не указан, не добавляем его
             }
         } catch (URISyntaxException e) {
 

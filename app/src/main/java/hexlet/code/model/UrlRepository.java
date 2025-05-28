@@ -1,14 +1,14 @@
 package hexlet.code.model;
 
+import hexlet.code.App;
 import hexlet.code.Url.BuildUrl;
 import hexlet.code.Url.Url;
 import hexlet.code.Url.UrlCheck;
 import hexlet.code.utils.Operations;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.sql.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,38 +19,51 @@ import static hexlet.code.Baserepo.datasource;
 
 public class UrlRepository {
 
-    public static Optional<Flash> setUrl(String url) throws SQLException { // Метод на добавление Url в БД
-        String sql1 = "INSERT INTO urls (name) VALUES (?)";
-//        String sql1 = "SELECT * FROM urls WHERE name = ?";
+    public static void createTable() {
         try (Connection connection = datasource.getConnection();
-//             PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+             Statement stmt = connection.createStatement();
+             BufferedReader reader = new BufferedReader
+                     (new InputStreamReader(App.class.getResourceAsStream("/urls.sql")))) {
+            StringBuilder sql = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sql.append(line).append("\n");
+            }
+            stmt.execute(sql.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Flash setUrl(String url) throws SQLException { // Метод на добавление Url в БД
+        String sql1 = "INSERT INTO urls (name) VALUES (?)";
+        try (Connection connection = datasource.getConnection();
              PreparedStatement stmt1 = connection.prepareStatement(sql1, PreparedStatement.RETURN_GENERATED_KEYS)) {
             Optional<Url> optionalUrl = Entities.findByName(Operations.validateUrl(url));
             if (optionalUrl.isEmpty()) {
-//                stmt.setString(1, url);
                 stmt1.setString(1, url);
-//                stmt.executeUpdate();
                 stmt1.executeUpdate();
                 ResultSet resultSet = stmt1.getGeneratedKeys();
                 if (resultSet.next()) {
-                    Long id = resultSet.getLong("id");
-                    String name = resultSet.getString("name");
-                    LocalDateTime createdAt = Operations.dateTransform(resultSet.getTimestamp("createdAt"));
-                    Url newUrl = new Url(id, name, createdAt);
+                    Long id = resultSet.getLong(1);
+                    Url newUrl = new Url(id, url, LocalDateTime.now());
                     Entities.add(newUrl);
-                    return Optional.of(new Flash("Страница успешно добавлена"));
+                    return new Flash("Страница успешно добавлена");
+                } else {
+                    throw new IllegalStateException("Не удалось получить сгенерированный ключ при добавлении URL");
                 }
             } else {
-                return Optional.of(new Flash("Страница уже существует"));
+                return new Flash("Страница уже существует");
             }
         } catch (SQLException e) {
             System.err.println("Ошибка при добавлении новой записи в БД " + e.getMessage());
             throw e;
         }
-        return Optional.empty();
     }
 
-    public static Optional<List<UrlCheck>> getUrls() throws SQLException { // метод на получение всех Url
+    public static List<UrlCheck> getUrls() throws SQLException { // метод на получение всех Url
         List<UrlCheck> urlCheckCount = new ArrayList<>();
         String sql = "SELECT * FROM url_check";
         try (Connection connection = datasource.getConnection();
@@ -64,7 +77,7 @@ public class UrlRepository {
                 UrlCheck urlCheck = new UrlCheck(id, name, dateCheck, codeAnswer);
                 urlCheckCount.add(urlCheck);
             }
-            return urlCheckCount.isEmpty() ? Optional.empty() : Optional.of(urlCheckCount);
+            return urlCheckCount;
         } catch (SQLException e) {
             System.err.println("Ошибка при получении списка URL " + e.getMessage());
             throw e;

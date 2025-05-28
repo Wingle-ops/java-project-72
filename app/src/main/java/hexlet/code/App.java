@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import hexlet.code.NamedRouters.NamedRouters;
 import hexlet.code.UrlController.UrlController;
+import hexlet.code.model.UrlRepository;
 import io.javalin.Javalin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +31,11 @@ public class App {
         // либо из ПО, либо локальный тип БД. Далее указываем путь соединения для пула БД.
         // После указываем, что создаем новый объект для управления пула соединений и отправляем его в Baserepo
         HikariConfig hConfig = new HikariConfig();
-        String dataBase = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project.sql");
+        String dataBase = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:urls");
         hConfig.setJdbcUrl(dataBase + ";DB_CLOSE_DELAY=-1");
         Baserepo.datasource = new HikariDataSource(hConfig);
+        UrlRepository.createTable();
+
 
         app.get(NamedRouters.index(), UrlController::main); // Переход на главную страничку сайта
         app.post(NamedRouters.urls(), UrlController::setUrl); // Добавление url в список сайтов

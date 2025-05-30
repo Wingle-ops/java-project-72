@@ -2,6 +2,7 @@ package hexlet.code.Url;
 
 import java.time.LocalDateTime;
 
+import hexlet.code.utils.Operations;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,4 +34,7 @@ public class UrlCheck {
         this.codeAnswer = codeAnswer;
     }
 
+    public String getDateCheck() {
+        return Operations.getFormattedDateCheck(dateCheck);
+    }
 }

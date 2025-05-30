@@ -28,7 +28,8 @@ public class UrlController {
     }
 
     public static void urls(Context ctx) throws SQLException { // Тут мы возвращаем список значений UrlCheck
-        ctx.render("urls/urls.jte", model("urls", UrlRepository.getUrls()));
+        ctx.render("urls/urls.jte",
+                model("flash", new Flash("", false, false), "urls", UrlRepository.getUrls()));
     }
 
     public static void getInfo(Context ctx) throws SQLException {

@@ -1,7 +1,6 @@
 package hexlet.code.model;
 
 import hexlet.code.Url.Url;
-import hexlet.code.Url.UrlCheck;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +14,6 @@ public class Entities {
         entities.add(entity);
     }
 
-//    public static List<Url> getEntities() {
-//        return entities;
-//    }
-
     public static Optional<Url> findByName(String name) {
         return entities.stream()
                 .filter(el -> (el.getName()).equals(name))
@@ -30,5 +25,4 @@ public class Entities {
                 .filter(el -> (el.getId()).equals(id))
                 .findAny();
     }
-
 }

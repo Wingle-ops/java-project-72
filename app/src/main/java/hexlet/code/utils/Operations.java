@@ -29,15 +29,13 @@ public class Operations {
                 return protocol + "://" + host + (port >= 1 ? ":" + port : ""); // Если порт не указан, не добавляем его
             }
         } catch (URISyntaxException e) {
-
             throw new RuntimeException("Ошибка при обработке URL");
         }
     }
 
-    public static String date() { // метод для получения даты и времени в формате строки без секунд
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return now.format(formatter);
+    public static String getFormattedDateCheck(LocalDateTime date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return date != null ? date.format(formatter) : "";
     }
 
     public static LocalDateTime dateTransform(Timestamp timestamp) { // Метод для преобразования даты БД
